@@ -1,0 +1,40 @@
+import orjson
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+from fastapi import APIRouter, Depends
+
+from api.v1.models import ItemKafka, RequestKafka, ResponseKafka
+from db.kafka_consumer import get_consumer
+from db.kafka_producer import get_producer
+
+router = APIRouter()
+RESP404 = {404: {"description": "Item not found"}}
+
+
+@router.get('/', responses=RESP404)
+async def get_kafka(consumer: AIOKafkaConsumer = Depends(get_consumer)) -> ResponseKafka:
+    """Тестовая ручка GET"""
+    result = []
+    msg_set = await consumer.getmany(timeout_ms=20, max_records=1000)
+    for tp, msgs in msg_set.items():
+        for msg in msgs:
+            keys = msg.key.decode("utf-8").split('+')
+            value = orjson.loads(msg.value)
+            result.append(ItemKafka(topic=tp.topic,
+                                    user_id=keys[0],
+                                    movie_id=keys[1],
+                                    value=value['value'],
+                                    time_stamp=msg.timestamp))
+    return result
+
+
+@router.post('/views/', responses=RESP404)
+async def post_kafka_viwes(data: RequestKafka, producer: AIOKafkaProducer = Depends(get_producer)):
+    """Постит в кафку и вроде асинхронно.
+    https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html#:~:text=send()%20is%20asynchronous
+    значение value:
+    views - в каком месте остановился просмотр фильма.
+    rating - рейтинг фильма
+    like - 1 - like / 0 - dislike
+    """
+    key = f'{data.user_id}+{data.movie_id}'
+    await producer.send('views', data.json().encode(), key.encode())

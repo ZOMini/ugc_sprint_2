@@ -1,0 +1,29 @@
+POST http://127.0.0.1:8000/api/v1/like/
+Content-Type: application/json
+
+{
+    "user_id": "500271",
+    "movie_id": "tt0120338",
+    "value": "8"
+}
+###
+GET http://127.0.0.1:8000/api/v1/like/63efcacbed2a7fb331ea038c
+###
+GET http://127.0.0.1:8000/api/v1/like/count_likes/tt0120338
+###
+GET http://127.0.0.1:8000/api/v1/like/avg_likes/tt0120338
+###
+PUT http://127.0.0.1:8000/api/v1/like/
+
+{
+    "user_id": "500271",
+    "movie_id": "tt0120338",
+    "value": "10"
+}
+###
+DELETE http://127.0.0.1:8000/api/v1/like/
+
+{
+    "user_id": "5002711",
+    "movie_id": "tt0120338"
+}

@@ -1,0 +1,96 @@
+from functools import lru_cache
+
+from bson.objectid import ObjectId
+from fastapi import Depends, HTTPException, status
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.database import Collection, Database
+from pymongo.results import InsertOneResult, UpdateResult
+
+from api.v1.models import PostRequestReview, PostRequestReviewLike
+from api.v1.pagination import PaginatedParams
+from core.config import settings
+from db.mongo import get_aio_motor
+from services.like import LikeService, PostRequestLike
+
+
+class ReviewService():
+    def __init__(self, mongo: AsyncIOMotorClient):
+        self.mongo = mongo
+        self.db: Database = self.mongo[settings.mongo_db]
+        self.review: Collection = self.db.review
+        self.review_like: Collection = self.db.review_like
+
+    def _convert_id(self, target: dict):
+        target['_id'] = str(target['_id'])
+        return target
+
+    async def post_review(self, data: PostRequestReview) -> InsertOneResult:
+        """Постит ревью. При создании пост получает рейтинг 5.0(count=1, summ=5)."""
+        data_dict = data.dict()
+        _id: InsertOneResult = await self.review.insert_one(data_dict)
+        if data_dict['value']:
+            like = LikeService(self.mongo)
+            await like.post_like(PostRequestLike(user_id=data_dict['user_id'],
+                                                 movie_id=data_dict['movie_id'],
+                                                 value=data_dict['value']))
+        return _id
+
+    async def get_review(self, data: str) -> dict:
+        """Ручка вне задания, но нужна."""
+        res = await self.review.find_one({'_id': ObjectId(data)})
+        async for doc in self.review.find():
+            print(doc)
+        if not res:
+            raise HTTPException(status.HTTP_404_NOT_FOUND)
+        res = self._convert_id(res)
+        return res
+
+    async def post_review_like(self, data: PostRequestReviewLike) -> InsertOneResult:
+        """Постит лайк на ревью, доbавляет сумму и количество в модель review,
+        для расчета среднего рейтинга при формировании списка ревью для фильма."""
+        if i := await self.review_like.find_one({'user_id': data.user_id, 'review_id': data.review_id}):
+            raise HTTPException(status.HTTP_409_CONFLICT)
+            # return await self.put_review_like(data)
+        data_dict = data.dict()
+        _id: InsertOneResult = await self.review_like.insert_one(data_dict)
+        # Ниже увеличиваем количество и сумму bалов для rewiew, получившего оценку.
+        await self.review.update_one({'_id': ObjectId(data.review_id)}, {'$inc': {'summ_like': data.value, 'count_like': 1}})
+        return {'id': str(_id.inserted_id)}
+
+    async def _put_review_like(self, data: PostRequestReviewLike) -> UpdateResult:
+        """Пока не раbочий метод. Лайкнуть ревьюв можно один раз."""
+        res: UpdateResult = await self.review_like.update_one(
+            {'user_id': data.user_id,
+             'review_id': data.review_id},
+            {'$set': {'value': data.value}})
+        async for doc in self.review_like.find():
+            print(doc)
+        if res.matched_count == 0:
+            raise HTTPException(status.HTTP_404_NOT_FOUND)
+        return res.raw_result
+
+
+    async def get_review_list(self, movie_id: str, sort_rating: int, sort_count: int, pagin: PaginatedParams) -> list[dict]:
+        """Метод для формирования списка ревью, summ_like и count_like в ревью для отладки."""
+        pipeline = [{'$match': {'movie_id': movie_id}},
+                    {'$project': {'summ_like': 1, 'count_like': 1, 'user_id': 1,'text': 1,'rating': {'$divide': ['$summ_like', '$count_like']}}}]
+        pipeline.append({'$skip': pagin.page*pagin.size })
+        pipeline.append({'$limit': pagin.size})
+        pipeline.append({'$sort': {'rating': sort_rating}}) if sort_rating else {}
+        pipeline.append({'$sort': {'count_like': sort_count}}) if sort_count else {}
+        res = []
+        async for docs in self.review.aggregate(pipeline):
+            self._convert_id(docs)
+            res.append(docs)
+        return res
+
+    async def clear_all(self) -> None:
+        """Ручка для разраbотки. Удалю после ревью. Кнопка b сломалась - кофе разлил:)"""
+        self.review.drop()
+        self.review_like.drop()
+
+@lru_cache()
+def get_review_service(
+    mongo_storage: AsyncIOMotorClient = Depends(get_aio_motor),
+) -> ReviewService:
+    return ReviewService(mongo=mongo_storage)
