@@ -22,7 +22,7 @@ def gen_reviews(num: int, as_dict = True) -> (Generator[dict[str, Any], None, No
         return ({'user_id': str(uuid.uuid4()),
                  'movie_id': str(uuid.uuid4()),
                  'text': f'This film is ...{i}',
-                 'value': random.randint(0,10)} for i in range(num))
+                 'value': round(random.random(), 4)} for i in range(num))
     else:
         return ((str(uuid.uuid4()),
                  str(uuid.uuid4()),

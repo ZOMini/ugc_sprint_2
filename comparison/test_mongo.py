@@ -5,9 +5,8 @@ import time
 import uuid
 from pprint import pprint as pp
 
-from pymongo import MongoClient
-
 from data_gen import gen_bookmarks, gen_reviews, gen_views
+from pymongo import MongoClient
 
 
 def get_database() -> MongoClient :
@@ -55,6 +54,17 @@ bookmarks.insert_many(gen_bookmarks(1000000))
 logging.error(time.time() - start_time)  # 22.12
 
 start_time = time.time()
+views.create_index('value')
+reviews.create_index('value')
+logging.error(time.time() - start_time)
+
+start_time = time.time()
 for v in range(1000, 11000, 10):
     q = views.find_one({'value': v})
+logging.error(time.time() - start_time)  # 5.10
+
+start_time = time.time()
+for v in range(1000, 11000, 10):
+    q = reviews.find_one({'value': round(random.random(), 4)})
+logging.error(q)
 logging.error(time.time() - start_time)  # 5.10
