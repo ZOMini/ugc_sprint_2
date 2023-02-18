@@ -46,6 +46,6 @@ async def get_review_list(movie_id: str,
 
 @router.delete('/clear_all', responses=RESP404)
 async def get_review_list(review_serv: ReviewService = Depends(get_review_service)):
-    """Очищает все review."""
+    """Очищает все review. Уbеру после ревью."""
     await review_serv.clear_all()
     return
