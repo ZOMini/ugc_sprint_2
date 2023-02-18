@@ -22,18 +22,13 @@ class LikeService():
         return target
 
     async def post_like(self, data: PostRequestLike) -> InsertOneResult:
-        if i := await self.like.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
-            print(f'_____{i}______')
+        if _ := await self.like.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
             return await self.put_like(data)
         _id: InsertOneResult = await self.like.insert_one(data.dict())
-        async for doc in self.like.find():
-            print(doc)
         return {'id': str(_id.inserted_id)}
 
     async def get_like(self, data: str) -> dict:
         res = await self.like.find_one({'_id': ObjectId(data)})
-        async for doc in self.like.find():
-            print(doc)
         if not res:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         res = self._convert_id(res)

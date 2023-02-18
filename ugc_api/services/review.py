@@ -38,8 +38,6 @@ class ReviewService():
     async def get_review(self, data: str) -> dict:
         """Ручка вне задания, но нужна."""
         res = await self.review.find_one({'_id': ObjectId(data)})
-        async for doc in self.review.find():
-            print(doc)
         if not res:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         res = self._convert_id(res)

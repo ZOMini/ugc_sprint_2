@@ -26,8 +26,6 @@ class BookmarkService():
         if i := await self.bookmark.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
             return HTTPException(status.HTTP_409_CONFLICT)
         _id: InsertOneResult = await self.bookmark.insert_one(data.dict())
-        async for doc in self.bookmark.find():
-            print(doc)
         return {'id': str(_id.inserted_id)}
 
     async def get_bookmark(self, id: str) -> dict:
