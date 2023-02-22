@@ -67,3 +67,4 @@ kafka_init()
 start = time.time()
 test()
 logger.error('INFO - ALL ok, time - %s', time.time() - start)
+#  
