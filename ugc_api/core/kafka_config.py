@@ -7,7 +7,6 @@ from core.config import kafka_list_urls
 from core.config import settings as SET
 from services.backoff import backoff
 
-logging.basicConfig(format='%(asctime)s[%(name)s]: %(message)s', level='ERROR')
 logger = logging.getLogger(__name__)
 
 kafka_kwargs = {'bootstrap_servers': kafka_list_urls,

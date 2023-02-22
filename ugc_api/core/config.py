@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     project_name: str = Field(...)
     mongo_db: str = Field(...)
     mongo_url: str = Field(...)
+    sentry_dns: str = Field(...)
+    logstash_host: str = Field(...)
+    logstash_port: int = Field(...)
+    log_level: str = Field('INFO')
 
     class Config:
         env_file = '../.env'

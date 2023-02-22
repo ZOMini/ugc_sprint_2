@@ -1,0 +1,42 @@
+version: '2.2'
+services:
+    logstash:
+        image: logstash:7.10.1
+        environment:
+          # Так как сейчас вы хотите запустить logstash без Elasticsearch, необходимо отключить встроенный мониторинг, отправляющий данные в ES
+          XPACK_MONITORING_ENABLED: "false"
+          ES_HOST: "elasticsearch:9200"
+        depends_on:
+          - elasticsearch
+        ports:
+          - "5044:5044/udp"
+        volumes:
+          # Монтируем файл с конфигурацией logstash
+          - ./deploy/logstash.conf:/config/logstash.conf:ro
+        # Запускаем с указанием конфигурационного файла
+        command: logstash -f /config/logstash.conf
+
+    elasticsearch:
+      image: elasticsearch:7.10.1
+      environment:
+        - discovery.type=single-node  # Указываем ES запуститься в одном экземпляре
+        - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
+      ports:
+        - 9200:9200
+      volumes:
+        - es_logs:/es_logs/data
+      restart: always
+    # Обратите внимание: не стоит использовать для ELK тот же ES, который задействован для полнотекстового поиска в вашем сервисе
+
+    kibana:
+        image: kibana:7.10.1
+        ports:
+          - "5601:5601"
+        environment:
+          - ELASTICSEARCH_HOSTS=["http://elasticsearch:9200"]
+          - ELASTICSEARCH_URL=http://elasticsearch:9200
+        depends_on:
+          - elasticsearch
+
+volumes:
+  es_logs:

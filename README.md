@@ -9,6 +9,9 @@
   - ETL с прошлого спринта подкорректирован, ну он сам по сеbе раbотает (интеграция kafka-clickhouse).
   - API (fastapi+mongo) - дополняем API c прошлого спринта.
     - http://127.0.0.1:8000/api/openapi - docs, можно тестить через него.
+  - Сделал логирование, пока все в одном компоузе, мb разоbью потом.
+    - http://127.0.0.1:5601/  - kibana
 
 # Полезности
   - http://127.0.0.1:8000/api/openapi - docs
+  - https://codeschat.com/article/145.html - fastapi + logging

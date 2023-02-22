@@ -14,7 +14,7 @@ GET http://127.0.0.1:8000/api/v1/like/count_likes/tt0120338
 GET http://127.0.0.1:8000/api/v1/like/avg_likes/tt0120338
 ###
 PUT http://127.0.0.1:8000/api/v1/like/
-
+ 
 {
     "user_id": "500271",
     "movie_id": "tt0120338",

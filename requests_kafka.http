@@ -26,7 +26,7 @@ Content-Type: application/json
     "user_id": "500271",
     "movie_id": "tt0120338",
     "value": "1"
-}
+} 
 ###
 DELETE http://127.0.0.1:8000/api/v1/kafka/
 Content-Type: application/json

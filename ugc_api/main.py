@@ -7,15 +7,27 @@ if BASE_DIR or f'{BASE_DIR}\\ugc_api' not in sys.path:
     sys.path.append(BASE_DIR)
     sys.path.append(f'{BASE_DIR}\\ugc_api')
 
+import logging
+
+import sentry_sdk
 import uvicorn
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import bookmark, kafka, like, review
 from core.config import settings as SET
 from core.kafka_config import kafka_init, kafka_kwargs
+from core.log_config import RequestIdFilter, init_logs
 from db import kafka_consumer, kafka_producer
+
+# logger = logging.getLogger(__name__)
+# logging.basicConfig(level="INFO")
+
+sentry_sdk.init(
+    dsn=SET.sentry_dns,
+    traces_sample_rate=1.0,
+)
 
 app = FastAPI(
     title=SET.project_name,
@@ -24,14 +36,17 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
+
 app.include_router(kafka.router, prefix='/api/v1/kafka', tags=['kafka'])
 app.include_router(review.router, prefix='/api/v1/review', tags=['review'])
 app.include_router(like.router, prefix='/api/v1/like', tags=['like'])
 app.include_router(bookmark.router, prefix='/api/v1/bookmark', tags=['bookmark'])
 
+
 @app.on_event('startup')
 async def startup():
     kafka_init()
+    init_logs()
     kafka_producer.aio_producer = AIOKafkaProducer(**kafka_kwargs)
     kafka_consumer.aio_consumer = AIOKafkaConsumer(
         *SET.topic_list,
@@ -41,6 +56,17 @@ async def startup():
         consumer_timeout_ms=100)
     await kafka_producer.aio_producer.start()
     await kafka_consumer.aio_consumer.start()
+
+
+@app.middleware("http")
+async def add_request_id(request: Request, call_next):
+    """Добавление requist id в логгеры. """
+    uvicorn_access_logger = logging.getLogger("uvicorn.access")
+    uvicorn_access_logger.addFilter(RequestIdFilter(request, 'RequestIdFilter'))
+    uvicorn_error_logger = logging.getLogger("uvicorn.error")
+    uvicorn_error_logger.addFilter(RequestIdFilter(request, 'RequestIdFilter'))
+    response: Response = await call_next(request)
+    return response
 
 
 @app.on_event('shutdown')
