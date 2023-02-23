@@ -6,7 +6,7 @@ from services.bookmark import BookmarkService, get_bookmark_service
 
 router = APIRouter()
 RESP404 = {404: {"detail": "Not found"}}
- 
+
 
 @router.post('/', responses=RESP404)
 async def post_bookmark(data: PostRequestBookmark,

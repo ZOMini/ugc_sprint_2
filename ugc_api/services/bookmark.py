@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 from fastapi import Depends, HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.database import Collection, Database
-from pymongo.results import DeleteResult, InsertOneResult, UpdateResult
+from pymongo.results import DeleteResult, InsertOneResult
 
 from api.v1.models import PostRequestBookmark
 from api.v1.pagination import PaginatedParams
@@ -23,7 +23,7 @@ class BookmarkService():
         return target
 
     async def post_bookmark(self, data: PostRequestBookmark) -> InsertOneResult:
-        if i := await self.bookmark.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
+        if _ := await self.bookmark.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
             return HTTPException(status.HTTP_409_CONFLICT)
         _id: InsertOneResult = await self.bookmark.insert_one(data.dict())
         return {'id': str(_id.inserted_id)}
@@ -49,7 +49,7 @@ class BookmarkService():
         """Метод для формирования списка закладок."""
         pipeline = [{'$match': {'user_id': user_id}},
                     {'$project': {'movie_id': 1}}]
-        pipeline.append({'$skip': pagin.page*pagin.size })
+        pipeline.append({'$skip': pagin.page * pagin.size})
         pipeline.append({'$limit': pagin.size})
         res = []
         async for docs in self.bookmark.aggregate(pipeline):

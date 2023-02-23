@@ -35,14 +35,14 @@ class LikeService():
         return res
 
     async def get_count_likes(self, movie_id: str) -> dict:
-        l = await self.like.count_documents({'movie_id': movie_id, 'value': 10})
+        li = await self.like.count_documents({'movie_id': movie_id, 'value': 10})
         d = await self.like.count_documents({'movie_id': movie_id, 'value': 0})
         if await self.like.count_documents({'movie_id': movie_id}) == 0:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
-        return {'like': l, 'dislike': d}
+        return {'like': li, 'dislike': d}
 
     async def get_avg_likes(self, movie_id: str) -> dict:
-        sum, cnt = 0, 0 
+        sum, cnt = 0, 0
         pipeline = [{'$match': {'movie_id': movie_id}}]
         async for docs in self.like.aggregate(pipeline):
             sum += docs['value']
@@ -69,6 +69,7 @@ class LikeService():
         if res.deleted_count == 0:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return res.raw_result
+
 
 @lru_cache()
 def get_like_service(

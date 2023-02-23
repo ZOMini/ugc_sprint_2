@@ -22,7 +22,7 @@ def backoff(start_sleep_time: float = 0.1,
                 try:
                     result = func(*args, *kwargs)
                     break
-                except Exception as e:
+                except Exception:
                     # logger.exception('BACKOFF %s', e.args)
                     logger.warning('BACKOFF WAIT')
                     sleep_time = sleep_time * factor

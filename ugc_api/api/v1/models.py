@@ -67,7 +67,7 @@ class PostRequestLike(OrJsonModel):
 
 
 class DeleteRequestLike(PostRequestLike):
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -111,7 +111,7 @@ class PostRequestReviewLike(OrJsonModel):
                 "value": 10
             }
         }
-   
+
 
 class PostRequestBookmark(OrJsonModel):
     user_id: str

@@ -46,7 +46,7 @@ class ReviewService():
     async def post_review_like(self, data: PostRequestReviewLike) -> InsertOneResult:
         """Постит лайк на ревью, доbавляет сумму и количество в модель review,
         для расчета среднего рейтинга при формировании списка ревью для фильма."""
-        if i := await self.review_like.find_one({'user_id': data.user_id, 'review_id': data.review_id}):
+        if _ := await self.review_like.find_one({'user_id': data.user_id, 'review_id': data.review_id}):
             raise HTTPException(status.HTTP_409_CONFLICT)
             # return await self.put_review_like(data)
         data_dict = data.dict()
@@ -67,12 +67,11 @@ class ReviewService():
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return res.raw_result
 
-
     async def get_review_list(self, movie_id: str, sort_rating: int, sort_count: int, pagin: PaginatedParams) -> list[dict]:
         """Метод для формирования списка ревью, summ_like и count_like в ревью для отладки."""
         pipeline = [{'$match': {'movie_id': movie_id}},
-                    {'$project': {'summ_like': 1, 'count_like': 1, 'user_id': 1,'text': 1,'rating': {'$divide': ['$summ_like', '$count_like']}}}]
-        pipeline.append({'$skip': pagin.page*pagin.size })
+                    {'$project': {'summ_like': 1, 'count_like': 1, 'user_id': 1, 'text': 1, 'rating': {'$divide': ['$summ_like', '$count_like']}}}]
+        pipeline.append({'$skip': pagin.page * pagin.size})
         pipeline.append({'$limit': pagin.size})
         pipeline.append({'$sort': {'rating': sort_rating}}) if sort_rating else {}
         pipeline.append({'$sort': {'count_like': sort_count}}) if sort_count else {}
@@ -86,6 +85,7 @@ class ReviewService():
         """Ручка для разраbотки. Удалю после ревью. Кнопка b сломалась - кофе разлил:)"""
         self.review.drop()
         self.review_like.drop()
+
 
 @lru_cache()
 def get_review_service(

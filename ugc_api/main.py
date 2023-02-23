@@ -21,9 +21,6 @@ from core.kafka_config import kafka_init, kafka_kwargs
 from core.log_config import RequestIdFilter, init_logs
 from db import kafka_consumer, kafka_producer
 
-# logger = logging.getLogger(__name__)
-# logging.basicConfig(level="INFO")
-
 sentry_sdk.init(
     dsn=SET.sentry_dns,
     traces_sample_rate=1.0,
