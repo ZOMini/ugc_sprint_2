@@ -11,7 +11,7 @@ RESP404 = {"description": "Item not found"}
 
 
 @router.get('/', responses={404: RESP404})
-async def get_kafka(consumer: AIOKafkaConsumer = Depends(get_consumer)) -> ResponseKafka:
+async def get_kafka(consumer: AIOKafkaConsumer = Depends(get_consumer)) -> list:
     """Тестовая ручка GET"""
     result = []
     msg_set = await consumer.getmany(timeout_ms=20, max_records=1000)
