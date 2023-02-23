@@ -33,7 +33,7 @@ jobs:
 
     - name: Lint with mypy
       run: |
-        mypy ugc_api/ --exclude=services --ignore-missing-imports --hide-error-codes
+        mypy ugc_api/ --exclude=services --ignore-missing-imports --disable-error-code
 
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
