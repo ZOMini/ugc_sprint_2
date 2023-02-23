@@ -31,16 +31,16 @@ sentry_sdk.init(
 
 app = FastAPI(
     title=SET.project_name,
-    docs_url='/api/openapi',
-    openapi_url='/api/openapi.json',
+    docs_url='/ugc/api/openapi',
+    openapi_url='/ugc/api/openapi.json',
     default_response_class=ORJSONResponse,
 )
 
 
-app.include_router(kafka.router, prefix='/api/v1/kafka', tags=['kafka'])
-app.include_router(review.router, prefix='/api/v1/review', tags=['review'])
-app.include_router(like.router, prefix='/api/v1/like', tags=['like'])
-app.include_router(bookmark.router, prefix='/api/v1/bookmark', tags=['bookmark'])
+app.include_router(kafka.router, prefix='/ugc/api/v1/kafka', tags=['kafka'])
+app.include_router(review.router, prefix='/ugc/api/v1/review', tags=['review'])
+app.include_router(like.router, prefix='/ugc/api/v1/like', tags=['like'])
+app.include_router(bookmark.router, prefix='/ugc/api/v1/bookmark', tags=['bookmark'])
 
 
 @app.on_event('startup')

@@ -29,6 +29,8 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
     restart: always
+    networks:
+      - ugc
 
   ugc_api:
     build: ./ugc_api
@@ -41,11 +43,16 @@ services:
       - broker
     ports:
       - '8000:8000'
+    networks:
+      - ugc
 
   zookeeper:
     image: zookeeper:3.5
     container_name: zookeeper
     hostname: zookeeper
+    networks:
+      - ugc
+
 
   clickhouse-node1:
     image: yandex/clickhouse-server:20.4
@@ -59,6 +66,8 @@ services:
       - ./db/clickhouse/data/shard_1:/docker-entrypoint-initdb.d/
     depends_on:
       - zookeeper
+    networks:
+      - ugc
 
   clickhouse-node2:
     image: yandex/clickhouse-server:20.4
@@ -69,6 +78,8 @@ services:
       - ./db/clickhouse/data/replica_2_4:/docker-entrypoint-initdb.d/
     depends_on:
       - zookeeper
+    networks:
+      - ugc
 
   clickhouse-node3:
     image: yandex/clickhouse-server:20.4
@@ -79,6 +90,8 @@ services:
       - ./db/clickhouse/data/shard_3:/docker-entrypoint-initdb.d/
     depends_on:
       - zookeeper
+    networks:
+      - ugc
 
   clickhouse-node4:
     image: yandex/clickhouse-server:20.4
@@ -89,6 +102,8 @@ services:
       - ./db/clickhouse/data/replica_2_4:/docker-entrypoint-initdb.d/
     depends_on:
       - zookeeper
+    networks:
+      - ugc
   
   mongodb:
     container_name: mongodb
@@ -97,60 +112,54 @@ services:
       - 27017:27017
     volumes:
       - mo_data:/mo_data
+    networks:
+      - ugc
 
-  logstash:
-      image: logstash:7.10.1
-      environment:
-        XPACK_MONITORING_ENABLED: "false"
-        ES_HOST: "elasticsearch:9200"
-      depends_on:
-        - elasticsearch
-      ports:
-        - "5044:5044/udp"
-      volumes:
-        - ./deploy/logstash.conf:/config/logstash.conf:ro
-        - /tmp/logs/nginx/:/var/log/nginx/:ro
-      command: logstash -f /config/logstash.conf
-
-  elasticsearch:
-    image: elasticsearch:7.10.1
-    environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
-    ports:
-      - 9200:9200
+  filebeat_ugc:
+    image: docker.io/elastic/filebeat:7.10.2
+    container_name: filebeat_ugc
     volumes:
-      - es_logs:/es_logs/data
-    restart: always
-
-  kibana:
-      image: kibana:7.10.1
-      ports:
-        - "5601:5601"
-      environment:
-        - ELASTICSEARCH_HOSTS=["http://elasticsearch:9200"]
-        - ELASTICSEARCH_URL=http://elasticsearch:9200
-      depends_on:
-        - elasticsearch
+      - /tmp/logs/nginx:/var/log/nginx:ro
+      - ./deploy/filebeat_ugc.yml:/usr/share/filebeat/filebeat.yml
+    command: filebeat -e -strict.perms=false
+    depends_on:
+      - ugc_api
+      - nginx
+      - logstash
+      - elasticsearch
+      - kibana
+    links:
+      - logstash
+    networks:
+      - ugc
+      - logging
 
   nginx:
     image: nginx:1.20.1-alpine
     container_name: nginx
     volumes:
       - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./deploy/configs:/etc/nginx/conf.d:ro
+      - ./deploy/configs_ugc:/etc/nginx/conf.d:ro
       - /tmp/logs/nginx/:/var/log/nginx/
     ports:
       - "80:80"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: udp://127.0.0.1:5044
-        tag: nginx 
+    # logging:
+    #   driver: gelf
+    #   options:
+    #     gelf-address: udp://127.0.0.1:5044
+    #     tag: nginx 
     restart: always
     depends_on:
         - ugc_api
+    networks:
+      - ugc
+
 
 volumes:
   mo_data:
-  es_logs:
+
+networks:
+  ugc:
+    driver: bridge
+  logging:
+    driver: bridge

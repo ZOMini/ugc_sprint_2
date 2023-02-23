@@ -1,4 +1,4 @@
-POST http://127.0.0.1:8000/api/v1/bookmark/
+POST http://127.0.0.1:8000/ugc/api/v1/bookmark/
 Content-Type: application/json
 
 {
@@ -6,11 +6,11 @@ Content-Type: application/json
     "movie_id": "tt01203318"
 }
 ###
-GET http://127.0.0.1:8000/api/v1/bookmark/63f08150a91df04573fe4e28
+GET http://127.0.0.1:8000/ugc/api/v1/bookmark/63f08150a91df04573fe4e28
 ###
-GET http://127.0.0.1:8000/api/v1/bookmark/list/5002717
+GET http://127.0.0.1:8000/ugc/api/v1/bookmark/list/5002717
 ###
-DELETE http://127.0.0.1:8000/api/v1/bookmark/
+DELETE http://127.0.0.1:8000/ugc/api/v1/bookmark/
 Content-Type: application/json
 
 {

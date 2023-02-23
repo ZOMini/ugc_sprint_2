@@ -14,6 +14,7 @@ class RequestIdFilter(logging.Filter):
     
     def filter(self, record):
         record.request_id = self.request.headers.get('X-Request-Id')
+        record.tags = ['ugc']
         return True
 
 
@@ -27,7 +28,8 @@ def init_logs() -> None:
     uvicorn_access_logger = logging.getLogger("uvicorn.access")
     uvicorn_access_logger.setLevel(SET.log_level)
     uvicorn_access_logger.addHandler(logstash_handler)
-    logging.root.addHandler(logstash_handler)
+    # logging.root.addHandler(logstash_handler)
+    # logging.root.setLevel(SET.log_level)
     # print(uvicorn_access_logger.handlers)
     # fastapi_logger.handlers = gunicorn_error_logger.handlers
     # fastapi_logger.setLevel(SET.log_level)
