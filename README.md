@@ -18,7 +18,10 @@
     - docker-compose -f docker-compose-log.yml -f docker-compose-all_prev_serv.yml up --build 
 
 # Полезности
-  - http://127.0.0.1:8000/ugc/api/openapi - docs
+  - http://127.0.0.1/ugc/api/openapi - docs
+  - http://127.0.0.1/auth/docs/v1/
+  - http://127.0.0.1/movies_fastapi/api/openapi
+  - http://127.0.0.1/api/v1/movies
   - https://codeschat.com/article/145.html - fastapi + logging
   - docker-compose -f docker-compose-ugc.yml -f docker-compose-log.yml up --build 
   - docker-compose -f docker-compose-log.yml -f docker-compose-all_prev_serv.yml up --build 
