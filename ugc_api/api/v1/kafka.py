@@ -7,10 +7,10 @@ from db.kafka_consumer import get_consumer
 from db.kafka_producer import get_producer
 
 router = APIRouter()
-RESP404 = {404: {"description": "Item not found"}}
+RESP404 = {"description": "Item not found"}
 
 
-@router.get('/', responses=RESP404)
+@router.get('/', responses={404: RESP404})
 async def get_kafka(consumer: AIOKafkaConsumer = Depends(get_consumer)) -> ResponseKafka:
     """Тестовая ручка GET"""
     result = []
@@ -27,7 +27,7 @@ async def get_kafka(consumer: AIOKafkaConsumer = Depends(get_consumer)) -> Respo
     return result
 
 
-@router.post('/views/', responses=RESP404)
+@router.post('/views/', responses={404: RESP404})
 async def post_kafka_viwes(data: RequestKafka, producer: AIOKafkaProducer = Depends(get_producer)):
     """Постит в кафку и вроде асинхронно.
     https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html#:~:text=send()%20is%20asynchronous

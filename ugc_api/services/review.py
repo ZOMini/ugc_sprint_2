@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any
 
 from bson.objectid import ObjectId
 from fastapi import Depends, HTTPException, status
@@ -43,7 +44,7 @@ class ReviewService():
         res = self._convert_id(res)
         return res
 
-    async def post_review_like(self, data: PostRequestReviewLike) -> InsertOneResult:
+    async def post_review_like(self, data: PostRequestReviewLike) -> HTTPException | dict[str, Any]:
         """Постит лайк на ревью, доbавляет сумму и количество в модель review,
         для расчета среднего рейтинга при формировании списка ревью для фильма."""
         if _ := await self.review_like.find_one({'user_id': data.user_id, 'review_id': data.review_id}):
@@ -55,7 +56,7 @@ class ReviewService():
         await self.review.update_one({'_id': ObjectId(data.review_id)}, {'$inc': {'summ_like': data.value, 'count_like': 1}})
         return {'id': str(_id.inserted_id)}
 
-    async def _put_review_like(self, data: PostRequestReviewLike) -> UpdateResult:
+    async def _put_review_like(self, data: PostRequestReviewLike) -> HTTPException | dict[str, Any]:
         """Пока не раbочий метод. Лайкнуть ревьюв можно один раз."""
         res: UpdateResult = await self.review_like.update_one(
             {'user_id': data.user_id,

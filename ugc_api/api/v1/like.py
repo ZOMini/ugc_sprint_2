@@ -4,10 +4,10 @@ from api.v1.models import DeleteRequestLike, PostRequestLike
 from services.like import LikeService, get_like_service
 
 router = APIRouter()
-RESP404 = {404: {"detail": "Not found"}}
+RESP404 = {"detail": "Not found"}
 
 
-@router.post('/', responses=RESP404)
+@router.post('/', responses={404: RESP404})
 async def post_like(data: PostRequestLike,
                     like_serv: LikeService = Depends(get_like_service)):
     """Постит лайк. Если для пары id уже есть лайк, то апдейтит."""
@@ -15,7 +15,7 @@ async def post_like(data: PostRequestLike,
     return res
 
 
-@router.get('/{like_id}', responses=RESP404)
+@router.get('/{like_id}', responses={404: RESP404})
 async def get_like(like_id: str,
                    like_serv: LikeService = Depends(get_like_service)):
     """Отдает лайк по id лайка."""
@@ -23,7 +23,7 @@ async def get_like(like_id: str,
     return res
 
 
-@router.get('/count_likes/{movie_id}', responses=RESP404)
+@router.get('/count_likes/{movie_id}', responses={404: RESP404})
 async def get_count_likes(movie_id: str,
                           like_serv: LikeService = Depends(get_like_service)):
     """Отдает количество лайков/дизлайков."""
@@ -31,7 +31,7 @@ async def get_count_likes(movie_id: str,
     return res
 
 
-@router.get('/avg_likes/{movie_id}', responses=RESP404)
+@router.get('/avg_likes/{movie_id}', responses={404: RESP404})
 async def get_avg_likes(movie_id: str,
                         like_serv: LikeService = Depends(get_like_service)):
     """Отдает средний рейтинг."""
@@ -39,7 +39,7 @@ async def get_avg_likes(movie_id: str,
     return res
 
 
-@router.put('/', responses=RESP404)
+@router.put('/', responses={404: RESP404})
 async def put_like(data: PostRequestLike,
                    like_serv: LikeService = Depends(get_like_service)):
     """Апдейтит лайк."""
@@ -47,7 +47,7 @@ async def put_like(data: PostRequestLike,
     return res
 
 
-@router.delete('/', responses=RESP404)
+@router.delete('/', responses={404: RESP404})
 async def delete_like(data: DeleteRequestLike,
                       like_serv: LikeService = Depends(get_like_service)):
     """Удаляет лайк."""

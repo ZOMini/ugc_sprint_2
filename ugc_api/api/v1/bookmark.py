@@ -5,10 +5,10 @@ from api.v1.pagination import PaginatedParams
 from services.bookmark import BookmarkService, get_bookmark_service
 
 router = APIRouter()
-RESP404 = {404: {"detail": "Not found"}}
+RESP404 = {"detail": "Not found"}
 
 
-@router.post('/', responses=RESP404)
+@router.post('/', responses={404: RESP404})
 async def post_bookmark(data: PostRequestBookmark,
                         bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
     """Постит закладку."""
@@ -16,7 +16,7 @@ async def post_bookmark(data: PostRequestBookmark,
     return res
 
 
-@router.get('/{bookmark_id}', responses=RESP404)
+@router.get('/{bookmark_id}', responses={404: RESP404})
 async def get_bookmark(bookmark_id: str,
                        bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
     """Отдает закладку по id."""
@@ -24,7 +24,7 @@ async def get_bookmark(bookmark_id: str,
     return res
 
 
-@router.delete('/', responses=RESP404)
+@router.delete('/', responses={404: RESP404})
 async def delete_bookmark(data: PostRequestBookmark,
                           bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
     """Удаляет закладку."""
@@ -32,7 +32,7 @@ async def delete_bookmark(data: PostRequestBookmark,
     return res
 
 
-@router.get('/list/{user_id}', responses=RESP404)
+@router.get('/list/{user_id}', responses={404: RESP404})
 async def get_list_bookmark(user_id: str,
                             pagin: PaginatedParams = Depends(),
                             bookmark_serv: BookmarkService = Depends(get_bookmark_service)):

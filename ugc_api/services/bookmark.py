@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any
 
 from bson.objectid import ObjectId
 from fastapi import Depends, HTTPException, status
@@ -22,14 +23,14 @@ class BookmarkService():
         target['_id'] = str(target['_id'])
         return target
 
-    async def post_bookmark(self, data: PostRequestBookmark) -> InsertOneResult:
+    async def post_bookmark(self, data: PostRequestBookmark) -> HTTPException | dict[str, str]:
         if _ := await self.bookmark.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
             return HTTPException(status.HTTP_409_CONFLICT)
         _id: InsertOneResult = await self.bookmark.insert_one(data.dict())
         return {'id': str(_id.inserted_id)}
 
-    async def get_bookmark(self, id: str) -> dict:
-        res = await self.bookmark.find_one({'_id': ObjectId(id)})
+    async def get_bookmark(self, _id: str) -> HTTPException | dict:
+        res = await self.bookmark.find_one({'_id': ObjectId(_id)})
         async for doc in self.bookmark.find():
             print(doc)
         if not res:
@@ -37,7 +38,7 @@ class BookmarkService():
         res = self._convert_id(res)
         return res
 
-    async def delete_bookmark(self, data: PostRequestBookmark) -> DeleteResult:
+    async def delete_bookmark(self, data: PostRequestBookmark) -> HTTPException | dict[str, Any]:
         res: DeleteResult = await self.bookmark.delete_one(
             {'user_id': data.user_id,
              'movie_id': data.movie_id})

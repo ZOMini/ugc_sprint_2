@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any
 
 from bson.objectid import ObjectId
 from fastapi import Depends, HTTPException, status
@@ -21,7 +22,7 @@ class LikeService():
         target['_id'] = str(target['_id'])
         return target
 
-    async def post_like(self, data: PostRequestLike) -> InsertOneResult:
+    async def post_like(self, data: PostRequestLike) -> HTTPException | dict[str, Any]:
         if _ := await self.like.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
             return await self.put_like(data)
         _id: InsertOneResult = await self.like.insert_one(data.dict())
@@ -34,14 +35,14 @@ class LikeService():
         res = self._convert_id(res)
         return res
 
-    async def get_count_likes(self, movie_id: str) -> dict:
+    async def get_count_likes(self, movie_id: str) -> HTTPException | dict[str, Any]:
         li = await self.like.count_documents({'movie_id': movie_id, 'value': 10})
         d = await self.like.count_documents({'movie_id': movie_id, 'value': 0})
         if await self.like.count_documents({'movie_id': movie_id}) == 0:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return {'like': li, 'dislike': d}
 
-    async def get_avg_likes(self, movie_id: str) -> dict:
+    async def get_avg_likes(self, movie_id: str) -> HTTPException | dict[str, float]:
         sum, cnt = 0, 0
         pipeline = [{'$match': {'movie_id': movie_id}}]
         async for docs in self.like.aggregate(pipeline):
@@ -53,7 +54,7 @@ class LikeService():
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return {'avg': round(sum / cnt, 2)}
 
-    async def put_like(self, data: PostRequestLike) -> UpdateResult:
+    async def put_like(self, data: PostRequestLike) -> HTTPException | dict[str, Any]:
         res: UpdateResult = await self.like.update_one(
             {'user_id': data.user_id,
              'movie_id': data.movie_id},
@@ -62,7 +63,7 @@ class LikeService():
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return res.raw_result
 
-    async def delete_like(self, data: DeleteRequestLike) -> DeleteResult:
+    async def delete_like(self, data: DeleteRequestLike) -> HTTPException | dict[str, Any]:
         res: DeleteResult = await self.like.delete_one(
             {'user_id': data.user_id,
              'movie_id': data.movie_id})
