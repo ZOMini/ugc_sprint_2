@@ -30,8 +30,8 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 ./ugc_api --exit-zero --format=html --htmldir=reports/api/wemake-python-styleguide/
+        flake8 ./ugc_api
 
     - name: Lint with mypy
       run: |
-        mypy --html-report reports/api/mypy/ ugc_api/* || true
+        mypy ugc_api/*
