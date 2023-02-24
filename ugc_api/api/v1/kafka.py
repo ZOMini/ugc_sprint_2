@@ -28,7 +28,7 @@ async def get_kafka(consumer: AIOKafkaConsumer = Depends(get_consumer)) -> list:
 
 
 @router.post('/views/', responses={404: RESP404})
-async def post_kafka_viwes(data: RequestKafka, producer: AIOKafkaProducer = Depends(get_producer)):
+async def post_kafka_viwes(data: RequestKafka, producer: AIOKafkaProducer = Depends(get_producer)) -> None:
     """Постит в кафку и вроде асинхронно.
     https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html#:~:text=send()%20is%20asynchronous
     значение value:

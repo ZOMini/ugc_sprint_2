@@ -1,6 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from api.v1.models import PostRequestBookmark
+from api.v1.models_response import (
+    BookmarksGetListResponse,
+    BookmarksGetResponse,
+    MongoDelResponse,
+    PostResponse
+)
 from api.v1.pagination import PaginatedParams
 from services.bookmark import BookmarkService, get_bookmark_service
 
@@ -10,32 +16,36 @@ RESP404 = {"detail": "Not found"}
 
 @router.post('/', responses={404: RESP404})
 async def post_bookmark(data: PostRequestBookmark,
-                        bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
+                        bookmark_serv: BookmarkService = Depends(get_bookmark_service)
+                        ) -> PostResponse:
     """Постит закладку."""
     res = await bookmark_serv.post_bookmark(data)
-    return res
+    return PostResponse.parse_obj(res)
 
 
 @router.get('/{bookmark_id}', responses={404: RESP404})
 async def get_bookmark(bookmark_id: str,
-                       bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
+                       bookmark_serv: BookmarkService = Depends(get_bookmark_service)
+                       ) -> BookmarksGetResponse:
     """Отдает закладку по id."""
     res = await bookmark_serv.get_bookmark(bookmark_id)
-    return res
+    return BookmarksGetResponse.parse_obj(res)
 
 
 @router.delete('/', responses={404: RESP404})
 async def delete_bookmark(data: PostRequestBookmark,
-                          bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
+                          bookmark_serv: BookmarkService = Depends(get_bookmark_service)
+                          ) -> MongoDelResponse:
     """Удаляет закладку."""
     res = await bookmark_serv.delete_bookmark(data)
-    return res
+    return MongoDelResponse.parse_obj(res)
 
 
 @router.get('/list/{user_id}', responses={404: RESP404})
 async def get_list_bookmark(user_id: str,
                             pagin: PaginatedParams = Depends(),
-                            bookmark_serv: BookmarkService = Depends(get_bookmark_service)):
+                            bookmark_serv: BookmarkService = Depends(get_bookmark_service)
+                            ) -> BookmarksGetListResponse:
     """Отдает список закладок по id пользователя."""
     res = await bookmark_serv.get_bookmark_list(user_id, pagin)
-    return res
+    return BookmarksGetListResponse.parse_obj([i for i in res])

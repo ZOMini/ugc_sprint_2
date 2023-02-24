@@ -2,28 +2,28 @@ POST http://127.0.0.1:8000/ugc/api/v1/like/
 Content-Type: application/json
 
 {
-    "user_id": "500271",
-    "movie_id": "tt0120338",
-    "value": "8"
+    "user_id": "50027121",
+    "movie_id": "tt01203383",
+    "value": "10"
 }
 ###
-GET http://127.0.0.1:8000/ugc/api/v1/like/63efcacbed2a7fb331ea038c
+GET http://127.0.0.1:8000/ugc/api/v1/like/63f8c13b5d640eec09a48a3c
 ###
-GET http://127.0.0.1:8000/ugc/api/v1/like/count_likes/tt0120338
+GET http://127.0.0.1:8000/ugc/api/v1/like/count_likes/tt01203383
 ###
-GET http://127.0.0.1:8000/ugc/api/v1/like/avg_likes/tt0120338
+GET http://127.0.0.1:8000/ugc/api/v1/like/avg_likes/tt01203383
 ###
 PUT http://127.0.0.1:8000/ugc/api/v1/like/
  
 {
-    "user_id": "500271",
-    "movie_id": "tt0120338",
+    "user_id": "5002712",
+    "movie_id": "tt01203383",
     "value": "10"
 }
 ###
 DELETE http://127.0.0.1:8000/ugc/api/v1/like/
 
 {
-    "user_id": "5002711",
-    "movie_id": "tt0120338"
+    "user_id": "5002712",
+    "movie_id": "tt01203383"
 }

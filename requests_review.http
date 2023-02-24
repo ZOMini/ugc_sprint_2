@@ -2,19 +2,19 @@ POST http://127.0.0.1:8000/ugc/api/v1/review/
 Content-Type: application/json
 
 {
-    "user_id": "5002717",
+    "user_id": "50027172",
     "movie_id": "tt0120338",
     "text": "wqeqweqweqwedsd3",
     "value": "10"
 }
 ###
-GET http://127.0.0.1:8000/ugc/api/v1/review/63f04587f760991ab58539b7
+GET http://127.0.0.1:8000/ugc/api/v1/review/63f8c1bc5d640eec09a48a4e
 ###
-POST http://127.0.0.1:8000/ugc/api/v1/review/like/
+POST http://127.0.0.1:8000/ugc/api/v1/review/like
 Content-Type: application/json
  
 {
-    "user_id": "500271117",
+    "user_id": "5002711172",
     "review_id": "63f04587f760991ab58539b7",
     "value": "10"
 }

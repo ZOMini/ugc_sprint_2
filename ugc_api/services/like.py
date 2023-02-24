@@ -3,8 +3,11 @@ from typing import Any
 
 from bson.objectid import ObjectId
 from fastapi import Depends, HTTPException, status
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.database import Collection, Database
+from motor.motor_asyncio import (
+    AsyncIOMotorClient,
+    AsyncIOMotorCollection,
+    AsyncIOMotorDatabase
+)
 from pymongo.results import DeleteResult, InsertOneResult, UpdateResult
 
 from api.v1.models import DeleteRequestLike, PostRequestLike
@@ -15,16 +18,12 @@ from db.mongo import get_aio_motor
 class LikeService():
     def __init__(self, mongo: AsyncIOMotorClient):
         self.mongo = mongo
-        self.db: Database = self.mongo[settings.mongo_db]
-        self.like: Collection = self.db.like
-
-    def _convert_id(self, target: dict) -> dict:
-        target['_id'] = str(target['_id'])
-        return target
+        self.db: AsyncIOMotorDatabase = self.mongo[settings.mongo_db]
+        self.like: AsyncIOMotorCollection = self.db.like
 
     async def post_like(self, data: PostRequestLike) -> HTTPException | dict[str, Any]:
         if _ := await self.like.find_one({'user_id': data.user_id, 'movie_id': data.movie_id}):
-            return await self.put_like(data)
+            raise HTTPException(status.HTTP_409_CONFLICT)
         _id: InsertOneResult = await self.like.insert_one(data.dict())
         return {'id': str(_id.inserted_id)}
 
@@ -32,7 +31,6 @@ class LikeService():
         res = await self.like.find_one({'_id': ObjectId(data)})
         if not res:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
-        res = self._convert_id(res)
         return res
 
     async def get_count_likes(self, movie_id: str) -> HTTPException | dict[str, Any]:
