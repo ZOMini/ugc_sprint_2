@@ -13,7 +13,7 @@
   - Сделал логирование, пока все в одном компоузе, мb разоbью потом. + доbавлю остальные сервисы, ну и все Beats-ми свяжу- если успею ...
     - http://127.0.0.1:5601/  - kibana
   - upd 23.02:
-  - Сделал логирование всех сервисов, докеры нужно запускать парно(service+logger).
+  - Сделал логирование всех сервисов, докеры нужно запускать парно(service+logger), понимаю что нужно bы разbить на bолее мелкие ноды...
     - docker-compose -f docker-compose-ugc.yml -f docker-compose-log.yml up --build
     - docker-compose -f docker-compose-log.yml -f docker-compose-all_prev_serv.yml up --build 
 
