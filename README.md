@@ -1,3 +1,5 @@
+[![ugc+ workflows](https://github.com/ZOMini/ugc_sprint_2/actions/workflows/python.yml/badge.svg)](https://github.com/ZOMini/ugc_sprint_2/actions/workflows/python.yml)
+
 # Для проверки:
     https://github.com/ZOMini/ugc_sprint_2 - репозиторий
     https://github.com/ZOMini/ugc_sprint_2/invitations - приглашение
