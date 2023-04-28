@@ -5,7 +5,6 @@
   - UGC api сервис - позволяет пользователю(фронту) производить определенные действия с BD и ивент брокером(Kafka + Click House).
   - Взаимодействие Kafka и Click House основано на прямой интеграции, без ETL.
   - Все микросервисы, в том числе ранее написанные, логируют в ELK.
-  - 
 
 ## Стек
   - Django, DRF, FastAPI, Elastic, Postgres, SQLlite, SQLAlchemy, Redis, Authlib(OAuth 2.0), JSON Web Tokens(JWT), Jaeger(Trace)
