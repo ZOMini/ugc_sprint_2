@@ -26,8 +26,6 @@
     - http://127.0.0.1:5601/  - kibana
   - upd 23.02:
   - Сделал логирование всех сервисов, докеры нужно запускать парно(service+logger), понимаю что нужно бы разbить на более мелкие ноды...
-    - docker-compose -f docker-compose-ugc.yml -f docker-compose-log.yml up --build
-    - docker-compose -f docker-compose-log.yml -f docker-compose-all_prev_serv.yml up --build 
 
 ## Полезности
   - http://127.0.0.1/ugc/api/openapi - docs
