@@ -143,11 +143,6 @@ services:
       - /tmp/logs/nginx/:/var/log/nginx/
     ports:
       - "80:80"
-    # logging:
-    #   driver: gelf
-    #   options:
-    #     gelf-address: udp://127.0.0.1:5044
-    #     tag: nginx 
     restart: always
     depends_on:
         - ugc_api

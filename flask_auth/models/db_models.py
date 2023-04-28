@@ -84,7 +84,7 @@ class Auth(Base):
                          onupdate=func.current_timestamp(), nullable=True)  # Дата последней выдачи ключей.
     user = relationship(User, back_populates="auth")
 
-    def __init__(self, user_id: uuid, user_agent: str, u_a_hash: int,
+    def __init__(self, user_id: uuid.UUID, user_agent: str, u_a_hash: int,
                  access_token: str, refresh_token: str):
         self.user_id = user_id
         self.user_agent = user_agent

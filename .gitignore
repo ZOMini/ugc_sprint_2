@@ -139,3 +139,4 @@ src_old/
 _src/
 Async_API_sprint_2.code-workspace
 _etl_ch/
+.env
