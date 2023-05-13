@@ -4,7 +4,7 @@
 ## Описание
   - UGC api сервис - позволяет пользователю(фронту) производить определенные действия с DB и ивент брокером(Kafka + Click House).
   - Взаимодействие Kafka и Click House основано на прямой интеграции, без ETL.
-  - Все микросервисы, в том числе ранее написанные, логируют в ELK.
+  - Все микросервисы, в том числе ранее написанные, логируются в ELK.
 
 ## Стек
   - Django, DRF, FastAPI, Elastic, Postgres, SQLlite, SQLAlchemy, Redis, Authlib(OAuth 2.0), JSON Web Tokens(JWT), Jaeger(Trace)
@@ -12,8 +12,8 @@
 
 ## Запуск
   - заполняем .env (см. .env.template)
-  - docker-compose -f docker-compose-ugc.yml -f docker-compose-log.yml up --build
-  - docker-compose -f docker-compose-log.yml -f docker-compose-all_prev_serv.yml up --build
+  - docker-compose -f docker-compose-ugc.yml -f docker-compose-log.yml up --build (UGC+ELK)
+  - docker-compose -f docker-compose-log.yml -f docker-compose-all_prev_serv.yml up --build (Auth+Jaeger+MovieAPI+AdminPanel+ELK)
 
 ## Сделано
   - залита клава кофем, потеряна кнопка "б".
